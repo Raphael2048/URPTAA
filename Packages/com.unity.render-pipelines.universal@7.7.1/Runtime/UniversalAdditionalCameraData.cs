@@ -48,7 +48,7 @@ namespace UnityEngine.Rendering.Universal
         None,
         FastApproximateAntialiasing,
         SubpixelMorphologicalAntiAliasing,
-        //TemporalAntialiasing
+        TemporalAntialiasing
     }
 
     /// <summary>

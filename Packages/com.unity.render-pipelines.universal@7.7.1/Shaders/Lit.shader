@@ -217,6 +217,27 @@ Shader "Universal Render Pipeline/Lit"
 
             ENDHLSL
         }
+        
+        Pass
+        {
+            Name "Meta"
+            Tags{"LightMode" = "MotionVectors"}
+
+            Cull Off
+
+            HLSLPROGRAM
+
+            #pragma vertex MotionVectorVertex
+            #pragma fragment MotionVectorFragment
+
+            #pragma shader_feature _ALPHATEST_ON
+            #pragma multi_compile_instancing
+
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/MotionVectorPass.hlsl"
+
+            ENDHLSL
+        }
         Pass
         {
             Name "Universal2D"

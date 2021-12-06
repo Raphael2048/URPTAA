@@ -472,7 +472,7 @@ namespace UnityEngine.Rendering.Universal
             if (!cameraData.postProcessEnabled)
                 return false;
 
-            if (cameraData.antialiasing == AntialiasingMode.SubpixelMorphologicalAntiAliasing)
+            if (cameraData.antialiasing == AntialiasingMode.TemporalAntialiasing)
                 return true;
 
             var stack = VolumeManager.instance.stack;
@@ -497,7 +497,7 @@ namespace UnityEngine.Rendering.Universal
                 lightmapBakeTypes = LightmapBakeType.Baked | LightmapBakeType.Mixed,
                 lightmapsModes = LightmapsMode.CombinedDirectional | LightmapsMode.NonDirectional,
                 lightProbeProxyVolumes = false,
-                motionVectors = false,
+                motionVectors = true,
                 receiveShadows = false,
                 reflectionProbes = true
             };
@@ -740,7 +740,15 @@ namespace UnityEngine.Rendering.Universal
                 projectionMatrix.m00 = newCotangent;
             }
 
-            cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix);
+            if (cameraData.antialiasing == AntialiasingMode.TemporalAntialiasing)
+            {
+                TAAUtils.GetJitteredPerspectiveProjectionMatrix(cameraData.camera, out var jitter, out var jitteredMatrix);
+                cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, jitteredMatrix, jitter, projectionMatrix);
+            }
+            else
+            {
+                cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix, Vector2.zero, Matrix4x4.identity);
+            }
         }
 
         static void InitializeRenderingData(UniversalRenderPipelineAsset settings, ref CameraData cameraData, ref CullingResults cullResults,

@@ -64,6 +64,9 @@ namespace UnityEngine.Rendering.Universal
 
             [Reload("Shaders/PostProcessing/FinalPost.shader")]
             public Shader finalPostPassPS;
+
+            [Reload("Shaders/PostProcessing/TAA.shader")]
+            public Shader taaPS;
         }
 
         [Serializable, ReloadGroup]
