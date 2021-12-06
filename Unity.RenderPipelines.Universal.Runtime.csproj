@@ -113,6 +113,7 @@
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\Passes\FinalBlitPass.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\Passes\InvokeOnRenderObjectCallbackPass.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\Passes\MainLightShadowCasterPass.cs" />
+     <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\Passes\MotionVectorPass.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\Passes\PostProcessPass.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\Passes\PostProcessPassCompat.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\Passes\RenderObjectsPass.cs" />
@@ -132,6 +133,7 @@
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\ShaderData.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\ShaderUtils.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\ShadowUtils.cs" />
+     <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\TAAUtils.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\UniversalAdditionalCameraData.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\UniversalAdditionalLightData.cs" />
      <Compile Include="Packages\com.unity.render-pipelines.universal@7.7.1\Runtime\UniversalRenderPipeline.cs" />

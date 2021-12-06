@@ -86,6 +86,7 @@
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Terrain\WavingGrass.shader" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Nature\SpeedTree8Passes.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\BakedLitInput.hlsl" />
+     <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\MotionVectorPass.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Utils\CopyDepth.shader" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Utils\FallbackError.shader" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Terrain\TerrainDetailLit.shader" />
@@ -111,6 +112,7 @@
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\ShadowCasterPass.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Terrain\WavingGrassInput.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\PostProcessing\Common.hlsl" />
+     <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\PostProcessing\TAA.shader" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Nature\SpeedTree7BillboardPasses.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\BakedLit.shader" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\PostProcessing\SubpixelMorphologicalAntialiasingBridge.hlsl" />
