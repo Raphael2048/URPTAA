@@ -69,6 +69,7 @@ namespace UnityEngine.Rendering.Universal
             var unJitteredProjectionMatrix = cameraData.GetUnJitteredProjectionMatrix();
             cmd.SetGlobalMatrix(ShaderPropertyId.unJitteredViewAndProjectionMatrix, GL.GetGPUProjectionMatrix(unJitteredProjectionMatrix, true) * viewMatrix);
             
+            cmd.SetGlobalVector(ShaderPropertyId.jitterParams, cameraData.GetJitterParams());
 
             if (setInverseMatrices)
             {

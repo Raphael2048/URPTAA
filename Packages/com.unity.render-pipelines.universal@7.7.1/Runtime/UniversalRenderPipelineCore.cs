@@ -51,13 +51,13 @@ namespace UnityEngine.Rendering.Universal
         Matrix4x4 m_ViewMatrix;
         Matrix4x4 m_ProjectionMatrix;
         Matrix4x4 m_UnJitteredProjectionMatrix;
-        Vector2 m_JitteredOffset;
+        Vector2 m_JitterParams;
 
-        internal void SetViewAndProjectionMatrix(Matrix4x4 viewMatrix, Matrix4x4 projectionMatrix, Vector2 offset, Matrix4x4 unJitteredProjectionMatrix)
+        internal void SetViewAndProjectionMatrix(Matrix4x4 viewMatrix, Matrix4x4 projectionMatrix, Vector4 jitterParams, Matrix4x4 unJitteredProjectionMatrix)
         {
             m_ViewMatrix = viewMatrix;
             m_ProjectionMatrix = projectionMatrix;
-            m_JitteredOffset = offset;
+            m_JitterParams = jitterParams;
             m_UnJitteredProjectionMatrix = unJitteredProjectionMatrix;
         }
 
@@ -91,9 +91,9 @@ namespace UnityEngine.Rendering.Universal
             return GL.GetGPUProjectionMatrix(m_ProjectionMatrix, true);
         }
 
-        public Vector2 GetJitteredOffset()
+        public Vector4 GetJitterParams()
         {
-            return m_JitteredOffset;
+            return m_JitterParams;
         }
 
         public Matrix4x4 GetUnJitteredProjectionMatrix()
@@ -215,6 +215,7 @@ namespace UnityEngine.Rendering.Universal
         public static readonly int inverseViewAndProjectionMatrix = Shader.PropertyToID("unity_MatrixInvVP");
         public static readonly int unJitteredViewAndProjectionMatrix = Shader.PropertyToID("unity_UnJitteredMatrixVP");
         public static readonly int prevViewAndProjectionMatrix = Shader.PropertyToID("unity_PrevMatrixVP");
+        public static readonly int jitterParams = Shader.PropertyToID("unity_JitterParams");
 
         public static readonly int cameraProjectionMatrix = Shader.PropertyToID("unity_CameraProjection");
         public static readonly int inverseCameraProjectionMatrix = Shader.PropertyToID("unity_CameraInvProjection");

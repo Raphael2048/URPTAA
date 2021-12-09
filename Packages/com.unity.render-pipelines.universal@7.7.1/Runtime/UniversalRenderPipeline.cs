@@ -747,7 +747,7 @@ namespace UnityEngine.Rendering.Universal
             }
             else
             {
-                cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix, Vector2.zero, Matrix4x4.identity);
+                cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix, Vector2.zero, projectionMatrix);
             }
         }
 

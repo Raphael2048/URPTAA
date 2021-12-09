@@ -39,12 +39,16 @@
             return offset;
         }
 
-        public static void GetJitteredPerspectiveProjectionMatrix(Camera camera, out Vector2 offset, out Matrix4x4 jitteredMatrix)
+        public static void GetJitteredPerspectiveProjectionMatrix(Camera camera, out Vector4 jitterPixels, out Matrix4x4 jitteredMatrix)
         {
+            jitterPixels.z = sampleIndex;
+            jitterPixels.w = k_SampleCount;
             var v = GenerateRandomOffset();
-            offset = new Vector2(
-                (v.x - 0.5f) / camera.pixelWidth,
-                (v.y - 0.5f) / camera.pixelHeight
+            jitterPixels.x = v.x;
+            jitterPixels.y = v.y;
+            var offset = new Vector2(
+                jitterPixels.x / camera.pixelWidth,
+                jitterPixels.y / camera.pixelHeight
             );
             jitteredMatrix = camera.projectionMatrix;
             jitteredMatrix.m02 += offset.x * 2;

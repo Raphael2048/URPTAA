@@ -576,9 +576,9 @@ namespace UnityEngine.Rendering.Universal.Internal
             cmd.SetGlobalTexture("_InputHistoryTexture", history);
             cmd.SetRenderTarget(m_MRT2, destination, 0, CubemapFace.Unknown, 0);
             cmd.SetViewProjectionMatrices(Matrix4x4.identity, Matrix4x4.identity);
-            var offset = cameraData.GetJitteredOffset();
+            var offset = cameraData.GetJitterParams();
             material.SetVector("_Params", new Vector4(
-                offset.x, offset.y, reset ? 1 : 0
+                offset.x / cameraData.pixelWidth, offset.y / cameraData.pixelHeight, reset ? 1 : 0
                 ));
             cmd.DrawProcedural(Matrix4x4.identity, material, 1, MeshTopology.Triangles,3);
         }

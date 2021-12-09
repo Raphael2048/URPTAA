@@ -201,6 +201,7 @@ float4x4 unity_MatrixVP;
 float4x4 unity_MatrixInvVP;
 float4x4 unity_UnJitteredMatrixVP;
 float4x4 unity_PrevMatrixVP;
+float4 unity_JitterParams;
 float4 unity_StereoScaleOffset;
 int unity_StereoEyeIndex;
 #endif
