@@ -115,6 +115,18 @@
             ClipBlend = saturate(ClipBlend);
             return lerp(History, Filtered, ClipBlend);
         }
+    
+        float3 FastToneMap(in float3 color)
+        {
+
+            return color.rgb * rcp(color.rgb + 1.0f);
+        }
+
+        float3 FastToneUnmap(in float3 color)
+        {
+            return color.rgb * rcp(1.0f - color.rgb);
+        }
+    
 
         void TAAFrag(Varyings input, out float3 ResultOut[2] : SV_Target)
         {
@@ -135,16 +147,16 @@
             float3 HistoryColor = _InputHistoryTexture.Sample(sampler_LinearClamp, HistoryUV);
 
             float3 AABBMin, AABBMax;
-            AABBMin = AABBMax = RGBToYCoCg(color);
+            AABBMin = AABBMax = RGBToYCoCg(FastToneMap(color));
             UNITY_UNROLL
             for(int k = 0; k < 9; k++)
             {
-                float3 C = RGBToYCoCg(_InputTexture.Sample(sampler_PointClamp, uv, kOffsets3x3[k]));
+                float3 C = RGBToYCoCg(FastToneMap(_InputTexture.Sample(sampler_PointClamp, uv, kOffsets3x3[k])));
                 AABBMin = min(AABBMin, C);
                 AABBMax = max(AABBMax, C);
             }
-            float3 HistoryColorYCoCg = RGBToYCoCg(HistoryColor);
-            HistoryColor = YCoCgToRGB(ClipHistory(HistoryColorYCoCg, AABBMin,AABBMax));
+            float3 HistoryColorYCoCg = RGBToYCoCg(FastToneMap(HistoryColor));
+            HistoryColor = FastToneUnmap(YCoCgToRGB(ClipHistory(HistoryColorYCoCg, AABBMin,AABBMax)));
 
             float BlendFactor = saturate(0.05 + (abs(Motion.x) + abs(Motion.y)) * 10);
             float3 result = lerp(HistoryColor, color, BlendFactor);

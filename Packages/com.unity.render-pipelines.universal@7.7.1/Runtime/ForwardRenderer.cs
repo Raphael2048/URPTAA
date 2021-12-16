@@ -327,7 +327,7 @@ namespace UnityEngine.Rendering.Universal
                 EnqueuePass(m_CopyColorPass);
             }
 
-            if (cameraData.antialiasing == AntialiasingMode.TemporalAntialiasing)
+            if (cameraData.postProcessEnabled && cameraData.antialiasing == AntialiasingMode.TemporalAntialiasing)
             {
                 m_MotionVectorPass.Setup(ref renderingData, m_MotionVector, m_ActiveCameraDepthAttachment);
                 EnqueuePass(m_MotionVectorPass);

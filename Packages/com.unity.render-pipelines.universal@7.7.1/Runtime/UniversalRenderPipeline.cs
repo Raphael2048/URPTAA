@@ -740,14 +740,14 @@ namespace UnityEngine.Rendering.Universal
                 projectionMatrix.m00 = newCotangent;
             }
 
-            if (cameraData.antialiasing == AntialiasingMode.TemporalAntialiasing)
+            if (cameraData.postProcessEnabled && cameraData.antialiasing == AntialiasingMode.TemporalAntialiasing)
             {
                 TAAUtils.GetJitteredPerspectiveProjectionMatrix(cameraData.camera, out var jitter, out var jitteredMatrix);
                 cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, jitteredMatrix, jitter, projectionMatrix);
             }
             else
             {
-                cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix, Vector2.zero, projectionMatrix);
+                cameraData.SetViewAndProjectionMatrix(camera.worldToCameraMatrix, projectionMatrix, Vector4.zero, projectionMatrix);
             }
         }
 
