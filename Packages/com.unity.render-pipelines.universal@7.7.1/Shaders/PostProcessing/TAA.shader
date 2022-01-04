@@ -12,7 +12,6 @@
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/Shaders/PostProcessing/Common.hlsl"
-
         
         Texture2D _CameraDepthTexture;
         float4 _CameraDepthTexture_TexelSize;
@@ -118,7 +117,6 @@
     
         float3 FastToneMap(in float3 color)
         {
-
             return color.rgb * rcp(color.rgb + 1.0f);
         }
 
@@ -126,23 +124,17 @@
         {
             return color.rgb * rcp(1.0f - color.rgb);
         }
-    
 
-        void TAAFrag(Varyings input, out float3 ResultOut[2] : SV_Target)
+        float4 TAAFrag(Varyings input) : SV_Target
         {
             float2 uv = input.uv - _Jitter;
             float3 color = SAMPLE_TEXTURE2D_X(_InputTexture, sampler_LinearClamp, uv);
             if(_Reset)
             {
-                ResultOut[0] = color;
-                ResultOut[1] = color;
-                return;
+                return float4(color, 1);
             }
             float2 closest = GetClosestFragment(input.uv);
             float2 Motion = SAMPLE_TEXTURE2D(_CameraMotionVectorsTexture, sampler_LinearClamp, closest).xy;
-            // ResultOut[0] = float4(Motion * 10, 0, 0);
-            // ResultOut[1] = float4(Motion * 10, 0, 0);
-            // return;
             float2 HistoryUV = input.uv - Motion;
             float3 HistoryColor = _InputHistoryTexture.Sample(sampler_LinearClamp, HistoryUV);
 
@@ -160,9 +152,7 @@
 
             float BlendFactor = saturate(0.05 + (abs(Motion.x) + abs(Motion.y)) * 10);
             float3 result = lerp(HistoryColor, color, BlendFactor);
-            ResultOut[0] = result;
-            ResultOut[1] = result;
-            return;
+            return float4(result, 1);
         }
         
 

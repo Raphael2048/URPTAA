@@ -900,7 +900,7 @@ namespace UnityEditor.Rendering.Universal
             {
                 hasChanged |= DrawIntPopup(m_AdditionalCameraDataAntialiasing, ref selectedAntialiasing, Styles.antialiasing, Styles.antialiasingOptions, Styles.antialiasingValues);
 
-                if (selectedAntialiasing == AntialiasingMode.SubpixelMorphologicalAntiAliasing)
+                if (selectedAntialiasing == AntialiasingMode.SubpixelMorphologicalAntiAliasing || selectedAntialiasing == AntialiasingMode.TemporalAntialiasing)
                 {
                     EditorGUI.indentLevel++;
                     hasChanged |= DrawIntPopup(m_AdditionalCameraDataAntialiasingQuality, ref selectedAntialiasingQuality, Styles.antialiasingQuality, Styles.antialiasingQualityOptions, Styles.antialiasingQualityValues);

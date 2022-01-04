@@ -75,12 +75,15 @@ namespace UnityEngine.Rendering.Universal
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
-                //必须加上这个设置，否者无法或者上一帧中的数据
-                renderingData.cameraData.camera.depthTextureMode |= DepthTextureMode.MotionVectors;
-                SortingCriteria sortingCriteria = renderingData.cameraData.defaultOpaqueSortFlags;
-                DrawingSettings drawingSettings = CreateDrawingSettings(m_ShaderTagId, ref renderingData, sortingCriteria);
-                drawingSettings.perObjectData = PerObjectData.MotionVectors;
-                context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref m_FilteringSettings);
+                if (renderingData.cameraData.antialiasingQuality >= AntialiasingQuality.Medium)
+                {
+                    //必须加上这个设置，否者无法获取上一帧中的数据
+                    renderingData.cameraData.camera.depthTextureMode |= (DepthTextureMode.MotionVectors | DepthTextureMode.Depth);
+                    SortingCriteria sortingCriteria = renderingData.cameraData.defaultOpaqueSortFlags;
+                    DrawingSettings drawingSettings = CreateDrawingSettings(m_ShaderTagId, ref renderingData, sortingCriteria);
+                    drawingSettings.perObjectData = PerObjectData.MotionVectors;
+                    context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref m_FilteringSettings);
+                }
             }
 
             context.ExecuteCommandBuffer(cmd);

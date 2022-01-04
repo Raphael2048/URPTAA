@@ -263,8 +263,20 @@ namespace UnityEngine.Rendering.Universal.Internal
             int destination = -1;
             bool isSceneViewCamera = cameraData.isSceneViewCamera;
 
+            RenderTargetIdentifier tempSource = -1;
+
             // Utilities to simplify intermediate target management
-            int GetSource() => source;
+            RenderTargetIdentifier GetSource()
+            {
+                if (tempSource == -1)
+                {
+                    return source;
+                }
+                else
+                {
+                    return tempSource;
+                }
+            }
 
             int GetDestination()
             {
@@ -285,7 +297,14 @@ namespace UnityEngine.Rendering.Universal.Internal
                 return destination;
             }
 
-            void Swap() => CoreUtils.Swap(ref source, ref destination);
+            void Swap()
+            {
+                if (tempSource != -1)
+                {
+                    tempSource = -1;
+                }
+                CoreUtils.Swap(ref source, ref destination);
+            }
 
             // Setup projection matrix for cmd.DrawMesh()
             cmd.SetGlobalMatrix(ShaderConstants._FullscreenProjMat, GL.GetGPUProjectionMatrix(Matrix4x4.identity, true));
@@ -316,8 +335,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             {
                 using (new ProfilingScope(cmd, ProfilingSampler.Get(URPProfileId.TAA)))
                 {
-                    DoTAA(ref cameraData, cmd, GetSource(), GetDestination());
-                    Swap();
+                    tempSource = DoTAA(ref cameraData, cmd, GetSource(), GetDestination());
                 }
             }
 
@@ -460,7 +478,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         #region Sub-pixel Morphological Anti-aliasing
 
-        void DoSubpixelMorphologicalAntialiasing(ref CameraData cameraData, CommandBuffer cmd, int source, int destination)
+        void DoSubpixelMorphologicalAntialiasing(ref CameraData cameraData, CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination)
         {
             var camera = cameraData.camera;
             var pixelRect = cameraData.pixelRect;
@@ -559,28 +577,27 @@ namespace UnityEngine.Rendering.Universal.Internal
             return false;
         }
 
-        void DoTAA(ref CameraData cameraData, CommandBuffer cmd, int source, int destination)
+        RenderTargetIdentifier DoTAA(ref CameraData cameraData, CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination)
         {
-            var material = m_Materials.taa;
             bool reset = EnsureTAATexture(ref m_TAAHistory[0]) | EnsureTAATexture(ref m_TAAHistory[1]);
             int indexRead = m_TAAIndexWrite;
             m_TAAIndexWrite = (++m_TAAIndexWrite) % 2;
 
             var history = m_TAAHistory[indexRead];
             var write = m_TAAHistory[m_TAAIndexWrite];
-            
-            
+            var material = m_Materials.taa;
             m_MRT2[0] = destination;
             m_MRT2[1] = write;
             cmd.SetGlobalTexture("_InputTexture", source);
             cmd.SetGlobalTexture("_InputHistoryTexture", history);
-            cmd.SetRenderTarget(m_MRT2, destination, 0, CubemapFace.Unknown, 0);
+            cmd.SetRenderTarget(write, destination, 0, CubemapFace.Unknown, 0);
             cmd.SetViewProjectionMatrices(Matrix4x4.identity, Matrix4x4.identity);
             var offset = cameraData.GetJitterParams();
             material.SetVector("_Params", new Vector4(
                 offset.x / cameraData.pixelWidth, offset.y / cameraData.pixelHeight, reset ? 1 : 0
                 ));
             cmd.DrawProcedural(Matrix4x4.identity, material, 1, MeshTopology.Triangles,3);
+            return write;
         }
         
         #endregion
@@ -589,7 +606,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         // TODO: CoC reprojection once TAA gets in LW
         // TODO: Proper LDR/gamma support
-        void DoDepthOfField(Camera camera, CommandBuffer cmd, int source, int destination, Rect pixelRect)
+        void DoDepthOfField(Camera camera, CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination, Rect pixelRect)
         {
             if (m_DepthOfField.mode.value == DepthOfFieldMode.Gaussian)
                 DoGaussianDepthOfField(camera, cmd, source, destination, pixelRect);
@@ -597,7 +614,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                 DoBokehDepthOfField(cmd, source, destination, pixelRect);
         }
 
-        void DoGaussianDepthOfField(Camera camera, CommandBuffer cmd, int source, int destination, Rect pixelRect)
+        void DoGaussianDepthOfField(Camera camera, CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination, Rect pixelRect)
         {
             var material = m_Materials.gaussianDepthOfField;
             int wh = m_Descriptor.width / 2;
@@ -702,7 +719,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             return Mathf.Min(0.05f, kRadiusInPixels / viewportHeight);
         }
 
-        void DoBokehDepthOfField(CommandBuffer cmd, int source, int destination, Rect pixelRect)
+        void DoBokehDepthOfField(CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination, Rect pixelRect)
         {
             var material = m_Materials.bokehDepthOfField;
             int wh = m_Descriptor.width / 2;
@@ -760,7 +777,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         #region Motion Blur
 
-        void DoMotionBlur(Camera camera, CommandBuffer cmd, int source, int destination)
+        void DoMotionBlur(Camera camera, CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination)
         {
             var material = m_Materials.cameraMotionBlur;
 
@@ -790,7 +807,7 @@ namespace UnityEngine.Rendering.Universal.Internal
         #region Panini Projection
 
         // Back-ported & adapted from the work of the Stockholm demo team - thanks Lasse!
-        void DoPaniniProjection(Camera camera, CommandBuffer cmd, int source, int destination)
+        void DoPaniniProjection(Camera camera, CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination)
         {
             float distance = m_PaniniProjection.distance.value;
             var viewExtents = CalcViewExtents(camera);
@@ -864,7 +881,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
         #region Bloom
 
-        void SetupBloom(CommandBuffer cmd, int source, Material uberMaterial)
+        void SetupBloom(CommandBuffer cmd, RenderTargetIdentifier source, Material uberMaterial)
         {
             // Start at half-res
             int tw = m_Descriptor.width >> 1;
@@ -1179,6 +1196,7 @@ namespace UnityEngine.Rendering.Universal.Internal
             public readonly Material uber;
             public readonly Material finalPass;
             public readonly Material taa;
+            public readonly ComputeShader taaCS;
 
             public MaterialLibrary(PostProcessData data)
             {
@@ -1192,6 +1210,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                 uber = Load(data.shaders.uberPostPS);
                 finalPass = Load(data.shaders.finalPostPassPS);
                 taa = Load(data.shaders.taaPS);
+                taaCS = data.shaders.taaCS;
             }
 
             Material Load(Shader shader)
