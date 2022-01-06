@@ -223,8 +223,8 @@ Shader "Universal Render Pipeline/Lit"
             Name "Meta"
             Tags{"LightMode" = "MotionVectors"}
 
-            Cull Off
-
+            Cull[_Cull]
+            ZWrite OFF
             HLSLPROGRAM
 
             #pragma vertex MotionVectorVertex

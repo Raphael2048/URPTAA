@@ -40,7 +40,7 @@ namespace UnityEngine.Rendering.Universal
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
-            cameraTextureDescriptor.graphicsFormat = GraphicsFormat.R16G16_SFloat;
+            cameraTextureDescriptor.graphicsFormat = GraphicsFormat.R16G16_UNorm;
             cameraTextureDescriptor.depthBufferBits = 0;
             cameraTextureDescriptor.msaaSamples = 1;
             cmd.GetTemporaryRT(motionVector.id, cameraTextureDescriptor);
@@ -71,7 +71,7 @@ namespace UnityEngine.Rendering.Universal
                     ViewProjectionMatrix = proj * view;
                 }
 
-                cmd.DrawProcedural(Matrix4x4.identity, material, 0, MeshTopology.Triangles, 3);
+                // cmd.DrawProcedural(Matrix4x4.identity, material, 0, MeshTopology.Triangles, 3);
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 

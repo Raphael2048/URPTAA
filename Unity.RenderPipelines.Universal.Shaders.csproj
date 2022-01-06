@@ -100,6 +100,7 @@
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\2D\Include\CombinedShapeLightShared.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Particles\ParticlesLitForwardPass.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Terrain\TerrainLitInput.hlsl" />
+     <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\PostProcessing\TAA.compute" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Terrain\WavingGrassBillboard.shader" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Terrain\TerrainLit.shader" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Nature\SpeedTree7BillboardInput.hlsl" />
@@ -109,6 +110,7 @@
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\DepthOnlyPass.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Terrain\TerrainLitAdd.shader" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\PostProcessing\BokehDepthOfField.shader" />
+     <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\PostProcessing\TAA.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\ShadowCasterPass.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\Terrain\WavingGrassInput.hlsl" />
      <None Include="Packages\com.unity.render-pipelines.universal@7.7.1\Shaders\PostProcessing\Common.hlsl" />

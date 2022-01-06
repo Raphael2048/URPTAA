@@ -67,6 +67,9 @@ namespace UnityEngine.Rendering.Universal
 
             [Reload("Shaders/PostProcessing/TAA.shader")]
             public Shader taaPS;
+
+            [Reload("Shaders/PostProcessing/TAA.compute")]
+            public ComputeShader taaCS;
         }
 
         [Serializable, ReloadGroup]
