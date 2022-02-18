@@ -28,7 +28,6 @@ namespace UnityEngine.Rendering.Universal
         FinalBlitPass m_FinalBlitPass;
         CapturePass m_CapturePass;
         MotionVectorPass m_MotionVectorPass;
-        TAAUtils _mTaaUtils;
 
 #if POST_PROCESSING_STACK_2_0_0_OR_NEWER
         PostProcessPassCompat m_OpaquePostProcessPassCompat;
