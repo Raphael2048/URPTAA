@@ -1,6 +1,6 @@
 ﻿#include "TAA.hlsl"
 RWTexture2D<float4> _Result;
-
+//#pragma enable_d3d11_debug_symbols
 #define THREADGROUP_SIZE 8
 #define THREADGROUP_TOTAL (THREADGROUP_SIZE * THREADGROUP_SIZE)
 
@@ -30,7 +30,7 @@ void PrecacheInputSceneColorToLDS(int2 GroupThreadID, int2 GroupID)
     const int LoadCount = (LDS_COLOR_ARRAY_SIZE + THREADGROUP_TOTAL - 1) / THREADGROUP_TOTAL;
     // 当前Tile的左上角
     int2 GroupTexelOffset = GetGroupTileTexelOffset(GroupID, LDS_COLOR_TILE_BORDER_SIZE);
-    int LinearGroupThreadID = GroupThreadID.x + GroupThreadID.y * THREADGROUP_SIZE;
+    uint LinearGroupThreadID = GroupThreadID.x + GroupThreadID.y * THREADGROUP_SIZE;
     for(int i = 0; i < LoadCount; i++)
     {
         int2 TexelLocation = GroupTexelOffset + int2(LinearGroupThreadID % LDS_COLOR_TILE_WIDTH, LinearGroupThreadID / LDS_COLOR_TILE_WIDTH);
@@ -72,10 +72,10 @@ float2 WeightedLerpFactors(float WeightA, float WeightB, float Blend)
 void TAACS(int3 id : SV_DispatchThreadID, int2 GroupID : SV_GroupID, int2 GroupThreadID : SV_GroupThreadID)
 {
     float2 OriginUV = (id.xy + 0.5) * _InputTexture_TexelSize.xy;
-    float depth = _CameraDepthTexture.SampleLevel(sampler_PointClamp, OriginUV, 0);
+    float depth = _CameraDepthTexture.SampleLevel(sampler_PointClamp, OriginUV, 0).r;
     float2 Motion = GetMotionVector(id.xy + 0.5, depth);
     float2 MotionUV = GetClosestFragment(OriginUV, depth);
-    float2 EncodedMotion = _CameraMotionVectorsTexture.SampleLevel(sampler_LinearClamp, MotionUV, 0);
+    float2 EncodedMotion = _CameraMotionVectorsTexture.SampleLevel(sampler_LinearClamp, MotionUV, 0).rg;
     if(any(EncodedMotion > 0))
     {
         Motion = DecodeVelocityFromTexture(EncodedMotion);
@@ -106,11 +106,11 @@ void TAACS(int3 id : SV_DispatchThreadID, int2 GroupID : SV_GroupID, int2 GroupT
     float3 AABBMin = M1 - 1.25 * StdDev;
     float3 AABBMax = M1 + 1.25 * StdDev;
 
-    float3 HistoryColor = TransformColorToTAASpace(_InputHistoryTexture.SampleLevel(sampler_LinearClamp, HistoryUV, 0));
+    float3 HistoryColor = TransformColorToTAASpace(_InputHistoryTexture.SampleLevel(sampler_LinearClamp, HistoryUV, 0).rgb);
     HistoryColor = ClipHistory(HistoryColor, AABBMin, AABBMax);
     
     //这里使用双线性采样，可考虑替换为 Catmull-Rom，加强锐化
-    float3 SceneColor = TransformColorToTAASpace(_InputTexture.SampleLevel(sampler_LinearClamp, OriginUV - _Jitter, 0));
+    float3 SceneColor = TransformColorToTAASpace(_InputTexture.SampleLevel(sampler_LinearClamp, OriginUV - _Jitter, 0).rgb);
     float2 BackTemp = Motion * _ScreenParams.xy;
     float Velocity = abs(BackTemp.x) + abs(BackTemp.y);
     float HistoryBlur = saturate(Velocity) * 0.5;
@@ -121,13 +121,14 @@ void TAACS(int3 id : SV_DispatchThreadID, int2 GroupID : SV_GroupID, int2 GroupT
     float BlendFinal = 0.04;
     BlendFinal = lerp(BlendFinal, 0.2, saturate(Velocity / 40));
     BlendFinal = max(BlendFinal, saturate( 0.01 * HistoryColor.x / abs(SceneColor.x - HistoryColor.x)));
-    // Nan处理
-    BlendFinal = -min(-BlendFinal, 0);
     if(IgnoreHistory) BlendFinal = 1;
     
     float SceneColorWeight = GetSceneColorHdrWeight(SceneColor.x);
     float HistoryColorWeight = GetSceneColorHdrWeight(HistoryColor.x);
     float2 Part = WeightedLerpFactors(HistoryColorWeight, SceneColorWeight, BlendFinal);
     float3 result = lerp(HistoryColor, SceneColor, Part.y);
-    if(all(id.xy < _ScreenParams.xy)) _Result[id.xy] = float4(TransformTAASpaceBack(result), 1);
+    result = TransformTAASpaceBack(result);
+    // Nan处理
+    result = -min(-result, 0);
+    if(all(id.xy < _ScreenParams.xy)) _Result[id.xy] = float4(result, 1);
 }

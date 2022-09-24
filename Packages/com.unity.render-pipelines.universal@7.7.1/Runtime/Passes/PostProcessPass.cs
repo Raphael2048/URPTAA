@@ -608,7 +608,7 @@ namespace UnityEngine.Rendering.Universal.Internal
                 }
                 cmd.SetRenderTarget(write, destination, 0, CubemapFace.Unknown, 0);
                 material.SetVector("_Params", p);
-                cmd.DrawProcedural(Matrix4x4.identity, material, 1, MeshTopology.Triangles,3);
+                cmd.DrawProcedural(Matrix4x4.identity, material, 0, MeshTopology.Triangles,3);
             }
             else
             {

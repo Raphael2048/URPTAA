@@ -8,7 +8,7 @@ float4 _Params;
 
 float2 DecodeVelocityFromTexture(float2 EncodedV)
 {
-    const float InvDiv = 1.0f / (0.499f * 0.5f);
+    const float InvDiv = 1.0f / (0.499f);
     float2 V = EncodedV.xy * InvDiv - 32767.0f / 65535.0f * InvDiv;
     return V;
 }
@@ -101,14 +101,14 @@ float3 ClipHistory(float3 History, float3 BoxMin, float3 BoxMax)
 
 float2 GetMotionVector(float2 screenPos, float depth)
 {
-    PositionInputs inputs = GetPositionInput(screenPos, _ScreenParams.zw - 1, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
+    PositionInputs inputs = GetPositionInput(screenPos, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
     float4 curClipPos = mul(UNITY_MATRIX_UNJITTERED_VP, float4(inputs.positionWS, 1));
     curClipPos /= curClipPos.w;
 
     float4 preClipPos = mul(UNITY_MATRIX_PREV_VP, float4(inputs.positionWS, 1));
     preClipPos /= preClipPos.w;
 
-    float2 motionVector = curClipPos - preClipPos;
+    float2 motionVector = curClipPos.xy - preClipPos.xy;
     #if UNITY_UV_STARTS_AT_TOP
     motionVector.y = -motionVector.y;
     #endif

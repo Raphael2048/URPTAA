@@ -25,7 +25,7 @@ float2 EncodeVelocityToTexture(float2 V)
     //编码范围是-2~2
     //0.499f是中间值，表示速度为0，
     //0是Clear值，表示当前没有速度写入，注意区分和速度为0的区别
-    float2 EncodeV =  V.xy * (0.499f * 0.5f) + 32767.0f / 65535.0f;
+    float2 EncodeV =  V.xy * 0.499f + 32767.0f / 65535.0f;
     return EncodeV;
 }
 
@@ -37,11 +37,14 @@ Varyings MotionVectorVertex(Attributes input)
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
     VertexPositionInputs vertexInput = GetVertexPositionInputs(input.position.xyz);
     output.positionCS = vertexInput.positionCS;
+    
+    //可能导致某些情况下深度测试不正确
 #if UNITY_REVERSED_Z
     output.positionCS.z -= unity_MotionVectorsParams.z * output.positionCS.w;
 #else
     output.positionCS.z += unity_MotionVectorsParams.z * output.positionCS.w;
 #endif
+    
     output.transferPos = mul(UNITY_MATRIX_UNJITTERED_VP, mul(GetObjectToWorldMatrix(), float4(input.position.xyz, 1.0)));
     if(unity_MotionVectorsParams.x > 0)
     {
@@ -58,7 +61,7 @@ float2 MotionVectorFragment(Varyings input) : SV_TARGET
 {
     float3 hPos = (input.transferPos.xyz / input.transferPos.w);
     float3 hPosOld = (input.transferPosOld.xyz / input.transferPosOld.w);
-    float2 motionVector = hPos - hPosOld;
+    float2 motionVector = (hPos - hPosOld).xy;
     #if UNITY_UV_STARTS_AT_TOP
         motionVector.y = -motionVector.y;
     #endif

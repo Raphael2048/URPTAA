@@ -95,7 +95,7 @@ namespace UnityEngine.Rendering.Universal
             m_CapturePass = new CapturePass(RenderPassEvent.AfterRendering);
             m_FinalBlitPass = new FinalBlitPass(RenderPassEvent.AfterRendering + 1, m_BlitMaterial);
 
-            m_MotionVectorPass = new MotionVectorPass(RenderPassEvent.AfterRenderingSkybox, data.postProcessData);
+            m_MotionVectorPass = new MotionVectorPass();
 #if POST_PROCESSING_STACK_2_0_0_OR_NEWER
             m_OpaquePostProcessPassCompat = new PostProcessPassCompat(RenderPassEvent.BeforeRenderingOpaques, true);
             m_PostProcessPassCompat = new PostProcessPassCompat(RenderPassEvent.BeforeRenderingPostProcessing);

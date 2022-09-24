@@ -14,20 +14,15 @@ namespace UnityEngine.Rendering.Universal
         const string m_ProfilerTag = "Motion Vector";
         ProfilingSampler m_ProfilingSampler = new ProfilingSampler(m_ProfilerTag);
         private RenderTargetHandle motionVector, depth;
-        private Shader shader;
-        private Material material;
         private Matrix4x4 ViewProjectionMatrix;
         private bool first = false;
         
-        RenderQueueType renderQueueType;
         FilteringSettings m_FilteringSettings;
         private ShaderTagId m_ShaderTagId;
 
-        public MotionVectorPass(RenderPassEvent evt, PostProcessData data)
+        public MotionVectorPass()
         {
-            renderPassEvent = evt;
-            shader = data.shaders.taaPS;
-            renderQueueType = RenderQueueType.Opaque;
+            renderPassEvent = RenderPassEvent.AfterRenderingSkybox;
             m_FilteringSettings = new FilteringSettings(RenderQueueRange.opaque);
             m_ShaderTagId = new ShaderTagId("MotionVectors");
         }
@@ -50,11 +45,6 @@ namespace UnityEngine.Rendering.Universal
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            if (material == null)
-            {
-                material = CoreUtils.CreateEngineMaterial(shader);
-            }
-
             CommandBuffer cmd = CommandBufferPool.Get(m_ProfilerTag);
             using (new ProfilingScope(cmd, m_ProfilingSampler))
             {
@@ -70,8 +60,7 @@ namespace UnityEngine.Rendering.Universal
                     cmd.SetGlobalMatrix(ShaderPropertyId.prevViewAndProjectionMatrix, ViewProjectionMatrix);
                     ViewProjectionMatrix = proj * view;
                 }
-
-                // cmd.DrawProcedural(Matrix4x4.identity, material, 0, MeshTopology.Triangles, 3);
+                
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
 
